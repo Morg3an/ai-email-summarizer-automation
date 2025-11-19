@@ -61,9 +61,6 @@ The Python function sends a prompt such as:
 
 "Summarize the following data in clear bullet points..."
 
-yaml
-Copy code
-
 And returns a concise summary used in reporting.
 
 ---
