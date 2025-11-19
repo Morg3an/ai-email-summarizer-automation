@@ -1,0 +1,82 @@
+{
+  "name": "Weekly AI Summary Generator",
+  "nodes": [
+    {
+      "id": "cron",
+      "name": "Weekly Trigger",
+      "type": "n8n-nodes-base.cron",
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "hour": 8,
+              "minute": 0,
+              "weekday": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "fetchNews",
+      "name": "Fetch Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "parameters": {
+        "url": "https://newsapi.org/v2/top-headlines?country=us",
+        "options": {}
+      }
+    },
+    {
+      "id": "cloudFunction",
+      "name": "Summarize with Python Function",
+      "type": "n8n-nodes-base.httpRequest",
+      "parameters": {
+        "url": "https://your-cloud-function-url.com",
+        "method": "POST",
+        "json": true,
+        "body": {
+          "text": "={{$json[\"articles\"]}}"
+        }
+      }
+    },
+    {
+      "id": "email",
+      "name": "Send Summary Email",
+      "type": "n8n-nodes-base.emailSend",
+      "parameters": {
+        "toEmail": "your-email@example.com",
+        "subject": "Weekly AI Summary",
+        "text": "={{$json[\"summary\"]}}"
+      }
+    }
+  ],
+  "connections": {
+    "cron": {
+      "main": [
+        [
+          {
+            "node": "Fetch Data"
+          }
+        ]
+      ]
+    },
+    "Fetch Data": {
+      "main": [
+        [
+          {
+            "node": "Summarize with Python Function"
+          }
+        ]
+      ]
+    },
+    "Summarize with Python Function": {
+      "main": [
+        [
+          {
+            "node": "Send Summary Email"
+          }
+        ]
+      ]
+    }
+  }
+}
